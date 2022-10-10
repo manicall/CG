@@ -5,7 +5,7 @@ def getStar(startX, startY,
             innerRadius, outerRadius,
             numRays, startAngleR = 0):
     deltaAngleR = np.pi / numRays
-    p = []
+    points = []
 
     for i in range(numRays * 2):
         angleR = startAngleR + i * deltaAngleR 
@@ -20,11 +20,9 @@ def getStar(startX, startY,
             relX *= innerRadius
             relY *= innerRadius
 
-        p.append(QPoint(relX + startX, relY + startY))
+        points.append(QPoint(relX + startX, relY + startY))
         
-    return p      
-            
-        
+    return points      
 
-
-
+if __name__ == "__main__":
+    pass
