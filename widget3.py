@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QPoint
-from isin import isin
+from isin import isIn_angle
 import random as rand
 
 import sys
@@ -79,7 +79,6 @@ class Field(QtWidgets.QLabel):
             # ориентация против часовой стрелки
             p[1], p[2] = p[2], p[1]
                
-               
         self.widget = MyWidget(Field(p))
         for i in range(n, len(points)):
             p = self.insert(points[i], p) # добавление точки
@@ -88,7 +87,7 @@ class Field(QtWidgets.QLabel):
         return points
     
     def insert(self, t, p): # добавление точки
-        if isin(t): return # t принадлежит
+        if isIn_angle(t): return # t принадлежит
         
         n = len(p)
         del1 = [0 for i in range(n)]  # n – число вершин
