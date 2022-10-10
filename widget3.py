@@ -1,77 +1,53 @@
 from PyQt5.QtCore import QPoint
-from isin import isIn_angle
-import random as rand
-
+from isin import diff, isIn_hLine, mul
+from star import innerPolygons
+import numpy as np
 import sys
 
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QPoint
 
-
-def diff(p1: QPoint, p2: QPoint):
-    return QPoint(p1.x() - p2.x(), p1.y() - p2.y())
-
-def mul(p1: QPoint, p2: QPoint):
-    return p1.x() * p2.y() - p1.y() * p2.x()
-
-class App(QtWidgets.QApplication):
-    def __init__(self):
-        super().__init__(sys.argv)
-        self.window = MainWindow()
-        self.window.show()
-
-class MainWindow(QtWidgets.QMainWindow):
+class Widget3(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("РГР (построение)")
-        self.resize(450, 300)
+                
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(Field())
         
-        self.setCentralWidget(Field())
+        self.setLayout(layout)
       
 # область рисования     
 class Field(QtWidgets.QLabel):
-    def __init__(self, points = None):
+    def __init__(self):
         super().__init__()
-        self.points = points
-        self.count = 0
-
+        self.hasPoints = False
+        
     def paintEvent(self, event):
         '''отрисовка содержимого QLabel'''
-        
         qp = QtGui.QPainter(self)  
         qp.setPen(QtGui.QColor(255,0,0))
+           
+        self.createPolygon(qp)
     
-        self.create_star_polygon(qp)    
-
-    def create_star_polygon(self, qp):
-        width = self.size().width() / 2
-        height = self.size().height() / 2
-        if self.points == None: 
-            
-            points = [QPoint(rand.randint(-100, 100) + width, 
-                            rand.randint(-100, 100) + height) for i in range(10)]     
-               
-            self.points = points
-            for i, p in enumerate(points):
-                qp.drawText(p + QPoint(-2, 4), str(i))
-                qp.drawEllipse(p, 8, 8)
-            
-            # соединение точек массива, хранящего вершины звезды
-            qp.drawLine(points[0], points[1])
-            qp.drawLine(points[2], points[1])
-            qp.drawLine(points[0], points[2])
-            
-            if self.count == 0: print(self.createPolygon(points))
-            self.count = 1
-        else:
-            for i, p in enumerate(self.points):
-                qp.drawText(p + QPoint(-2, 4), str(i))
-                qp.drawEllipse(p, 8, 8)
-         
-        # for i in range(1, 2):
-        #     qp.drawLine(points[i-1], points[i])
+    def createPolygon(self, qp):
+        width = self.size().width() // 2
+        height = self.size().height() // 2
         
-    def createPolygon(self, points):    
+        if not self.hasPoints:
+            self.points = innerPolygons(width, height, 10)
+            self.points = [p for row in self.points for p in row]
+            self.points = self.getPolygonPoints(self.points)
+            
+            self.hasPoints = True
+        
+        #for k in self.points:
+        j = len(self.points) - 1
+        for i in range(len(self.points)):   
+            qp.drawLine(self.points[i], self.points[j])
+            j = i
+                
+    # метод дейкстры
+    def getPolygonPoints(self, points):    
         n = 3 # начальный треугольник
         p = [points[i] for i in range(3)]
         
@@ -79,15 +55,13 @@ class Field(QtWidgets.QLabel):
             # ориентация против часовой стрелки
             p[1], p[2] = p[2], p[1]
                
-        self.widget = MyWidget(Field(p))
         for i in range(n, len(points)):
             p = self.insert(points[i], p) # добавление точки
-            self.widget.addField(Field(p), str(i))
             
-        return points
+        return p
     
     def insert(self, t, p): # добавление точки
-        if isIn_angle(t): return # t принадлежит
+        if isIn_hLine(p, t): return p # t принадлежит
         
         n = len(p)
         del1 = [0 for i in range(n)]  # n – число вершин
@@ -119,24 +93,6 @@ class Field(QtWidgets.QLabel):
             p[i] = q[i]
         
         return p
-      
-class MyWidget(QtWidgets.QWidget):
-    def __init__(self, field, title = "default"):
-        super().__init__()
-        self.setWindowTitle(title)
-        self.resize(450, 300)
-        self.tab = QtWidgets.QTabWidget() 
-        layout = QtWidgets.QVBoxLayout()
-        
-        self.tab.addTab(field, "1")
-        
-        layout.addWidget(self.tab)
-        self.setLayout(layout)
-        self.show()
-        
-    def addField(self, field, str):
-        self.tab.addTab(field, str)
-      
+  
 if __name__ == "__main__":
-    app = App()
-    sys.exit(app.exec())
+    pass

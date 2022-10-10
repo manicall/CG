@@ -24,5 +24,37 @@ def getStar(startX, startY,
         
     return points      
 
+def getRegularPolygon(startX, startY, radius, num):
+    deltaAngleR = np.pi / num
+    points = []
+
+    for i in range(num):
+        angleR = 2 * i * deltaAngleR
+        ca = np.cos(angleR)
+        sa = np.sin(angleR)
+        relX = ca
+        relY = sa
+
+        relX *= radius
+        relY *= radius
+            
+        points.append(QPoint(relX + startX, relY + startY))
+        
+    return points      
+    
+
+def innerPolygons(width, height, numOfPolygons):
+    points = []
+    
+    r = 10
+    n = 3
+    
+    for i in range(numOfPolygons):
+        points.append(getRegularPolygon(width, height, r, n))
+        r += 10
+        n += 1
+
+    return points
+
 if __name__ == "__main__":
     pass

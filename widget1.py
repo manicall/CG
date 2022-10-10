@@ -6,8 +6,8 @@ from star import getStar
 # содержимое первого задания
 class Widget1(QtWidgets.QWidget):
     def __init__(self, statusBar):
+        super().__init__(statusBar)
         self.statusBar = statusBar
-        super().__init__()
         main_layout = QtWidgets.QVBoxLayout()
         hBox = QtWidgets.QHBoxLayout()
         
