@@ -22,6 +22,7 @@ class Field(QtWidgets.QLabel):
         self.message = QtWidgets.QLabel()
         self.statusBar.addWidget(self.message)
         self.hasPoints = False
+        self.point = None
     
     def paintEvent(self, event):
         '''отрисовка содержимого QLabel'''
@@ -29,10 +30,16 @@ class Field(QtWidgets.QLabel):
         qp.setPen(QtGui.QColor(255,0,0))
            
         self.createPolygon(qp)
+        
+        qp.setPen(QtGui.QColor(0,0,255))
+        qp.setBrush(QtGui.QColor(0,0,255))
+        if self.point != None: self.setPoint(qp)
     
-    def mousePressEvent(self, ev: QtGui.QMouseEvent) -> None:
+    def mousePressEvent(self, ev: QtGui.QMouseEvent) -> None:  
         print(QPoint(ev.x(), ev.y()))
-    
+        self.point = QPoint(ev.x(), ev.y())
+        self.update()  
+
         self.message.setText(self.getMessage(QPoint(ev.x(), ev.y())))
             
         return super().mousePressEvent(ev)
@@ -60,7 +67,10 @@ class Field(QtWidgets.QLabel):
         qp.drawLine(self.points[0], self.points[-1])
         for i in range(1, len(self.points)):
             qp.drawLine(self.points[i-1], self.points[i])
-                
+         
+    def setPoint(self, qp): 
+        qp.drawEllipse(self.point, 2, 2)
+         
     # метод дейкстры
     def getPolygonPoints(self, points):    
         n = 3 # начальный треугольник
@@ -108,23 +118,6 @@ class Field(QtWidgets.QLabel):
             p[i] = q[i]
         
         return p
-      
-class MyWidget(QtWidgets.QWidget):
-    def __init__(self, field, title = "default"):
-        super().__init__()
-        self.setWindowTitle(title)
-        self.resize(450, 300)
-        self.tab = QtWidgets.QTabWidget() 
-        layout = QtWidgets.QVBoxLayout()
-        
-        self.tab.addTab(field, "1")
-        
-        layout.addWidget(self.tab)
-        self.setLayout(layout)
-        self.show()
-        
-    def addField(self, field, str):
-        self.tab.addTab(field, str)
       
 if __name__ == "__main__":
     pass

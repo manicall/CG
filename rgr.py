@@ -13,7 +13,7 @@ class App(QtWidgets.QApplication):
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("РГР (построение)")
+        self.setWindowTitle("Вычислительная геометрия")
         self.resize(450, 300)
         
         self.statusBar = QtWidgets.QStatusBar()
