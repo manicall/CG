@@ -38,7 +38,7 @@ def getRegularPolygon(startX, startY, radius, num):
         relX *= radius
         relY *= radius
             
-        points.append(QPoint(relX + startX, relY + startY))
+        points.append(QPoint(int(relX + startX), int(relY + startY)))
         
     return points      
     
@@ -50,7 +50,7 @@ def innerPolygons(width, height, numOfPolygons):
     n = 3
     
     for i in range(numOfPolygons):
-        points.append(getRegularPolygon(width, height, r, n))
+        points.extend(getRegularPolygon(width, height, r, n))
         r += 10
         n += 1
 

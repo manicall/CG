@@ -14,7 +14,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Вычислительная геометрия")
-        self.resize(450, 300)
+        self.resize(600, 300)
         
         self.statusBar = QtWidgets.QStatusBar()
         self.setStatusBar(self.statusBar)
@@ -22,7 +22,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tab = QtWidgets.QTabWidget()
         self.tab.addTab(Widget1(self.statusBar), "Звездчатый многоугольник")
         self.tab.addTab(Widget2(self.statusBar), "Проверка на принадлежность")
-        self.tab.addTab(Widget3(), "прямоугольник методом дейкстры")
+        self.tab.addTab(Widget3(), "прямоугольник методом заворачивания")
         
         self.tab.currentChanged.connect(self.on_tabBarClicked)
         

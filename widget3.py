@@ -35,64 +35,42 @@ class Field(QtWidgets.QLabel):
         
         if not self.hasPoints:
             self.points = innerPolygons(width, height, 10)
-            self.points = [p for row in self.points for p in row]
-            self.points = self.getPolygonPoints(self.points)
+            H = self.jarvismarch(self.points)
             
             self.hasPoints = True
         
-        #for k in self.points:
-        j = len(self.points) - 1
-        for i in range(len(self.points)):   
-            qp.drawLine(self.points[i], self.points[j])
+        j = len(H) - 1
+        for i in range(len(H)):    
+            qp.drawLine(self.points[H[i]], self.points[H[j]])
             j = i
                 
-    # метод дейкстры
-    def getPolygonPoints(self, points):    
-        n = 3 # начальный треугольник
-        p = [points[i] for i in range(3)]
+    # метод заворачивания подарка
+    def jarvismarch(self, points):
+        A = [[p.x(), p.y()] for p in points]
         
-        if(mul(diff(p[1], p[0]), diff(p[2], p[1])) < 0):
-            # ориентация против часовой стрелки
-            p[1], p[2] = p[2], p[1]
-               
-        for i in range(n, len(points)):
-            p = self.insert(points[i], p) # добавление точки
-            
-        return p
-    
-    def insert(self, t, p): # добавление точки
-        if isIn_hLine(p, t): return p # t принадлежит
-        
-        n = len(p)
-        del1 = [0 for i in range(n)]  # n – число вершин
-        q = [QPoint() for i in range(n + 1)]  # формируемый многоугольник
-
-        for i in range(n):
-            if(mul(diff(t, p[i]), (diff(p[(i + 1)%n], p[i]))) >= 0):
-                del1[i] = 1 # отмечаем видимые стороны
+        n = len(A)
+        P = [*range(n)]
+        # start point
+        for i in range(1,n):
+            if A[P[i]][0]<A[P[0]][0]: 
+                P[i], P[0] = P[0], P[i]  
+        H = [P[0]]
+        del P[0]
+        P.append(H[0])
+        while True:
+            right = 0
+            for i in range(1,len(P)):
+                if rotate(A[H[-1]],A[P[right]],A[P[i]])<0:
+                    right = i
+            if P[right]==H[0]: 
+                break
             else:
-                del1[i] = 0
-        
-        for i in range(n):
-            if(del1[i] == 1 and del1[(i + 1)%n] == 0): break
-        j = 0
-        i = (i + 1)%n # i – номер последней
-        # невидимой стороны
-        while del1[i] == 0:
-            q[j] = p[i]
-            j += 1
-            i = (i + 1)%n #  перепись вершин
-            if j == n + 1: return p 
-        
-        q[j] = p[i]
-        q[j + 1] = t # добавление вершин
+                H.append(P[right])
+            del P[right]
+        return H
 
-        p = [QPoint for i in range(j + 2)] 
-        n = j + 2
-        for i in range(n):
-            p[i] = q[i]
-        
-        return p
-  
+def rotate(A,B,C):
+    return (B[0]-A[0])*(C[1]-B[1])-(B[1]-A[1])*(C[0]-B[0])
+
 if __name__ == "__main__":
     pass
